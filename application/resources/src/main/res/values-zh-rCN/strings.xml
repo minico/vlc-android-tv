@@ -124,7 +124,7 @@
     <string name="repeat">重复关闭</string>
     <string name="repeat_single">单曲重复</string>
     <string name="repeat_all">全部重复</string>
-    <string name="previous">上一曲</string>
+    <string name="previous">上一项</string>
     <string name="stop">停止</string>
     <string name="firstsong">播放列表第一首</string>
     <string name="lastsong">播放列表最后一首</string>
@@ -591,7 +591,7 @@
     <string name="language_to_download">语言</string>
     <string name="delete_the_selected">删除选中项</string>
     <string name="download_the_selected">下载选中项</string>
-    <string name="next">下一曲</string>
+    <string name="next">下一项</string>
     <string name="download">下载</string>
     <string name="ctx_player_video_track">选择视频轨道</string>
     <string name="ctx_player_audio_track">音频轨</string>
