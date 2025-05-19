@@ -154,7 +154,7 @@ fun <X, Y> CoroutineScope.map(
     }
 }
 
-@BindingAdapter("app:asyncText", requireAll = false)
+@BindingAdapter("asyncText", requireAll = false)
 fun asyncText(view: TextView, text: CharSequence?) {
     if (text.isNullOrEmpty()) {
         view.visibility = View.GONE
@@ -165,7 +165,7 @@ fun asyncText(view: TextView, text: CharSequence?) {
     (view as AppCompatTextView).setTextFuture(PrecomputedTextCompat.getTextFuture(text, params, null))
 }
 
-@BindingAdapter("app:asyncText", requireAll = false)
+@BindingAdapter("asyncText", requireAll = false)
 fun asyncTextItem(view: TextView, item: MediaLibraryItem?) {
     if (item == null) {
         view.visibility = View.GONE
@@ -184,7 +184,7 @@ fun asyncTextItem(view: TextView, item: MediaLibraryItem?) {
 const val folderReplacementMarker = "§*§"
 const val fileReplacementMarker = "*§*"
 
-@BindingAdapter("app:browserDescription", requireAll = false)
+@BindingAdapter("browserDescription", requireAll = false)
 fun browserDescription(view: TextView, description: String?) {
     (view as AppCompatTextView).text = description?.getDescriptionSpan(view.context)
 }
@@ -208,7 +208,7 @@ fun MediaLibraryItem.getPresenceDescription() = when (this) {
     else -> ""
 }
 
-@BindingAdapter("app:presenceDescription", requireAll = false)
+@BindingAdapter("presenceDescription", requireAll = false)
 fun presenceDescription(view: TextView, description: String?) {
     (view as AppCompatTextView).text = description?.getPresenceDescriptionSpan(view.context)
 }
