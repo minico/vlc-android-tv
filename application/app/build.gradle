@@ -116,11 +116,21 @@ android {
         }
     }
 
+	sourceSets.dev {
+        manifest.srcFile 'flavors/release/AndroidManifest.xml'
+        jniLibs.srcDirs = ['src/main/jniLibs']
+    }
+    sourceSets.debug {
+        manifest.srcFile 'flavors/release/AndroidManifest.xml'
+        jniLibs.srcDirs = ['src/main/jniLibs']
+    }
     sourceSets.release {
         manifest.srcFile 'flavors/release/AndroidManifest.xml'
+        jniLibs.srcDirs = ['src/main/jniLibs']
     }
     sourceSets.signedRelease {
         manifest.srcFile 'flavors/release/AndroidManifest.xml'
+        jniLibs.srcDirs = ['src/main/jniLibs']
     }
 
     splits {

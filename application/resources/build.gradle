@@ -51,12 +51,12 @@ dependencies {
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.ext.kotlinx_version"
 
     api project(':application:tools')
-    devApi project(':libvlc')
-    devApi project(':medialibrary')
-    debugApi "org.videolan.android:libvlc-all:$rootProject.ext.libvlcVersion"
-    debugApi "org.videolan.android:medialibrary-all:$rootProject.ext.medialibraryVersion"
-    releaseApi "org.videolan.android:libvlc-all:$rootProject.ext.libvlcVersion"
-    releaseApi "org.videolan.android:medialibrary-all:$rootProject.ext.medialibraryVersion"
+    api project(':libvlc')
+    api project(':medialibrary')
+//    debugApi "org.videolan.android:libvlc-all:$rootProject.ext.libvlcVersion"
+//    debugApi "org.videolan.android:medialibrary-all:$rootProject.ext.medialibraryVersion"
+//    releaseApi "org.videolan.android:libvlc-all:$rootProject.ext.libvlcVersion"
+//    releaseApi "org.videolan.android:medialibrary-all:$rootProject.ext.medialibraryVersion"
 
     // Retrofit
     api "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit"
