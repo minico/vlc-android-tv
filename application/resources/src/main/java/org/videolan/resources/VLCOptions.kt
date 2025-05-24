@@ -69,7 +69,7 @@ object VLCOptions {
 
             val timeStrechingDefault = context.resources.getBoolean(R.bool.time_stretching_default)
             val timeStreching = pref.getBoolean("enable_time_stretching_audio", timeStrechingDefault)
-            val subtitlesEncoding = pref.getString("subtitle_text_encoding", "") ?: ""
+            val subtitlesEncoding = pref.getString("subtitle_text_encoding", "EUC-CN") ?: "EUC-CN"
             val frameSkip = pref.getBoolean("enable_frame_skip", false)
             val chroma = pref.getString("chroma_format", "RV16") ?: "RV16"
             val verboseMode = pref.getBoolean("enable_verbose_mode", true)

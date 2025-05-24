@@ -80,7 +80,7 @@ class PreferencesSubtitlesUITest: BasePreferenceUITest() {
                 "65535" to R.string.subtitles_color_blue, "16776960" to R.string.subtitles_color_yellow, "65280" to R.string.subtitles_color_green
         )
         val MAP_SUBTITLE_ENCODING = mapOf(
-                "" to "Default (Windows-1252)", "UTF-8" to "Universal (UTF-8)"
+                "" to "Simplified Chinese Unix (EUC-CN)", "UTF-8" to "Universal (UTF-8)"
         )
     }
 }

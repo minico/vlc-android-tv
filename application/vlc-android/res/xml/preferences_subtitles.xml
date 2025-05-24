@@ -35,7 +35,7 @@
             android:key="subtitles_bold"
             android:title="@string/subtitles_bold_title"/>
     <ListPreference
-            android:defaultValue=""
+            android:defaultValue="EUC-CN"
             android:entries="@array/subtitles_encoding_list"
             android:entryValues="@array/subtitles_encoding_values"
             android:key="subtitle_text_encoding"
