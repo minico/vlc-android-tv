@@ -32,7 +32,7 @@
                     android:minWidth="600dip"
                     android:layout_alignParentTop="true"
                     android:layout_margin="8dp"
-                    android:text="@{dialog.text}" />
+                    android:text="您尝试连接的计算机需要身份验证，请输入用户名和密码。" />
 
             <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/login_container"

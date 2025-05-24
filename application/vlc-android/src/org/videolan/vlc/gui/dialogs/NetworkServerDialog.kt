@@ -34,6 +34,7 @@ class NetworkServerDialog : VLCBottomSheetDialogFragment(), AdapterView.OnItemSe
     private lateinit var editPort: EditText
     private lateinit var editFolder: EditText
     private lateinit var editUsername: TextInputLayout
+    private lateinit var editPassword: TextInputLayout
     private lateinit var editServername: EditText
     private lateinit var spinnerProtocol: Spinner
     private lateinit var url: TextView
@@ -67,6 +68,7 @@ class NetworkServerDialog : VLCBottomSheetDialogFragment(), AdapterView.OnItemSe
         editAddress = editAddressLayout.editText!!
         editFolder = (v.findViewById<View>(R.id.server_folder) as TextInputLayout).editText!!
         editUsername = (v.findViewById<View>(R.id.server_username) as TextInputLayout)
+        editPassword = (v.findViewById<View>(R.id.server_password) as TextInputLayout)
         editServername = (v.findViewById<View>(R.id.server_name) as TextInputLayout).editText!!
         spinnerProtocol = v.findViewById(R.id.server_protocol)
         editPort = v.findViewById(R.id.server_port)
@@ -110,6 +112,7 @@ class NetworkServerDialog : VLCBottomSheetDialogFragment(), AdapterView.OnItemSe
         editAddress.addTextChangedListener(this)
         editFolder.addTextChangedListener(this)
         editUsername.editText!!.addTextChangedListener(this)
+        editPassword.editText!!.addTextChangedListener(this)
 
         updateUrl()
     }
@@ -132,7 +135,12 @@ class NetworkServerDialog : VLCBottomSheetDialogFragment(), AdapterView.OnItemSe
         sb.append(spinnerProtocol.selectedItem.toString().toLowerCase())
                 .append("://")
         if (editUsername.isEnabled && !editUsername.editText!!.text.isNullOrEmpty()) {
-            sb.append(editUsername.editText!!.text).append('@')
+            sb.append(editUsername.editText!!.text)
+
+            if (editPassword.isEnabled && !editPassword.editText!!.text.isNullOrEmpty()) {
+                sb.append(":").append(editPassword.editText!!.text)
+            }
+            sb.append('@')
         }
         sb.append(editAddress.text)
         if (needPort()) {
@@ -181,11 +189,11 @@ class NetworkServerDialog : VLCBottomSheetDialogFragment(), AdapterView.OnItemSe
         when (protocols[position]) {
             "SMB" -> {
                 addressHint = R.string.server_share_hint
-                userEnabled = false
+                //userEnabled = false
             }
             "NFS" -> {
                 addressHint = R.string.server_share_hint
-                userEnabled = false
+                //userEnabled = false
                 portEnabled = false
             }
         }
@@ -195,7 +203,9 @@ class NetworkServerDialog : VLCBottomSheetDialogFragment(), AdapterView.OnItemSe
         editPort.setText(port)
         editPort.isEnabled = portEnabled
         editUsername.visibility = if (userEnabled) View.VISIBLE else View.GONE
+        editPassword.visibility = if (userEnabled) View.VISIBLE else View.GONE
         editUsername.isEnabled = userEnabled
+        editPassword.isEnabled = userEnabled
         updateUrl()
     }
 

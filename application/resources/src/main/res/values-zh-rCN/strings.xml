@@ -168,6 +168,7 @@
     <string name="server_share_hint">网络共享名称 (或 IP 地址)</string>
     <string name="server_folder_hint">文件夹路径 (可选)</string>
     <string name="server_username_hint">用户名</string>
+    <string name="server_password_hint">密码</string>
     <string name="server_servername_hint">服务器名称（方便识别）</string>
     <string name="server_port">端口: </string>
     <string name="login">登录名</string>
@@ -816,6 +817,10 @@
     <string name="optional_features_warning">此功能尚处于测试阶段，可能会导致崩溃和不稳定 
 </string>
     <string name="start_vlc">启动 VLC</string>
+    <string name="allow_storage_manager_title">允许 VLC 访问所有文件</string>
+    <string name="allow_storage_manager_description">%s\n\n授予权限?</string>
+    <string name="allow_storage_manager_explanation">为了获取 VLC 的全部功能并支持所有类型的媒体文件，我们强烈建议您授予此权限。</string>
+    <string name="partial_content">VLC 无法访问您的所有文件</string>
 
     <!-- Duplication Warning Dialog -->
     <string name="message_primary_default">添加重复项？</string>

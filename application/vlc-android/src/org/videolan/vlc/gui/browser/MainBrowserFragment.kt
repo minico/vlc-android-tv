@@ -107,7 +107,8 @@ class MainBrowserFragment : BaseFragment(), View.OnClickListener, CtxActionRecei
             override fun onClick(v: View) {
                 when (layoutPosition) {
                     0 -> (activity as MainActivity)?.onShowHistoryClicked()
-                    1 -> {
+                    1 -> showAddServerDialog(null)
+                    2 -> {
                         activity?.startActivityForResult(Intent(activity, PreferencesActivity::class.java), ACTIVITY_RESULT_PREFERENCES)
                         (activity as MainActivity)?.onShowPreferenceClicked()
                     }
@@ -131,13 +132,17 @@ class MainBrowserFragment : BaseFragment(), View.OnClickListener, CtxActionRecei
                     viewHolder.binding.cover = BitmapDrawable(res, activity?.applicationContext?.getBitmapFromDrawable(R.drawable.ic_menu_history))
                 }
                 1 -> {
-                    viewHolder.binding.filename = "设置"
+                    viewHolder.binding.filename = "添加网络"
+                    viewHolder.binding.cover = BitmapDrawable(res, activity?.applicationContext?.getBitmapFromDrawable(R.drawable.ic_menu_network_add_big))
+                }
+                2 -> {
+                    viewHolder.binding.filename = "设置选项"
                     viewHolder.binding.cover = BitmapDrawable(res, activity?.applicationContext?.getBitmapFromDrawable(R.drawable.ic_menu_preferences))
                 }
             }
         }
 
-        override fun getItemCount() = 2
+        override fun getItemCount() = 3
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
