@@ -852,11 +852,15 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         if (data == null) return
 
         if (data.hasExtra(EXTRA_MRL)) {
-            service?.addSubtitleTrack(data.getStringExtra(EXTRA_MRL)!!.toUri(), false)
-            service?.currentMediaWrapper?.let {
-                SlaveRepository.getInstance(this).saveSlave(it.location, IMedia.Slave.Type.Subtitle, 2, data.getStringExtra(EXTRA_MRL)!!)
+            if(!subtitlesExtraPath.equals(data.getStringExtra(EXTRA_MRL))) {
+                subtitlesExtraPath = data.getStringExtra(EXTRA_MRL)
+
+                service?.addSubtitleTrack(data.getStringExtra(EXTRA_MRL)!!.toUri(), false)
+                service?.currentMediaWrapper?.let {
+                    SlaveRepository.getInstance(this).saveSlave(it.location, IMedia.Slave.Type.Subtitle, 1, data.getStringExtra(EXTRA_MRL)!!)
+                }
+                addNextTrack = true
             }
-            addNextTrack = true
         } else if (BuildConfig.DEBUG) Log.d(TAG, "Subtitle selection dialog was cancelled")
     }
 
@@ -1248,7 +1252,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
                     forcedTime = -1
                     if (!subtitlesExtraPath.isNullOrEmpty()) {
                         service.addSubtitleTrack(subtitlesExtraPath!!, true)
-                        subtitlesExtraPath = null
+                        //subtitlesExtraPath = null
                     }
                 }
                 MediaPlayer.Event.Vout -> {
