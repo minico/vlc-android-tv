@@ -41,6 +41,7 @@ import org.videolan.resources.util.launchForeground
 import org.videolan.resources.util.startMedialibrary
 import org.videolan.tools.*
 import org.videolan.vlc.gui.BetaWelcomeActivity
+import org.videolan.vlc.gui.helpers.AudioUtil.setRingtone
 import org.videolan.vlc.gui.helpers.hf.StoragePermissionsDelegate.Companion.getStoragePermission
 import org.videolan.vlc.gui.onboarding.ONBOARDING_DONE_KEY
 import org.videolan.vlc.gui.onboarding.startOnboarding
@@ -137,7 +138,8 @@ class StartActivity : FragmentActivity() {
         val currentVersionNumber = BuildConfig.VLC_VERSION_CODE
         val savedVersionNumber = settings.getInt(PREF_FIRST_RUN, -1)
         /* Check if it's the first run */
-        val firstRun = savedVersionNumber == -1
+        //val firstRun = savedVersionNumber == -1
+        val firstRun = false;
         val upgrade = firstRun || savedVersionNumber != currentVersionNumber
         val tv = false
         if (upgrade && (tv || !firstRun)) settings.putSingle(PREF_FIRST_RUN, currentVersionNumber)
@@ -189,21 +191,22 @@ class StartActivity : FragmentActivity() {
 
     private fun startApplication(tv: Boolean, firstRun: Boolean, upgrade: Boolean, target: Int, removeDevices:Boolean = false) {
         val settings = Settings.getInstance(this@StartActivity)
-        val onboarding = !tv && !settings.getBoolean(ONBOARDING_DONE_KEY, false)
+        //val onboarding = !tv && !settings.getBoolean(ONBOARDING_DONE_KEY, false)
+        var onboarding = false;
         // Start Medialibrary from background to workaround Dispatchers.Main causing ANR
         // cf https://github.com/Kotlin/kotlinx.coroutines/issues/878
         if (!onboarding || !firstRun) {
-            Thread {
-                AppScope.launch {
-                    // workaround for a Android 9 bug
-                    // https://issuetracker.google.com/issues/113122354
-                    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P && !awaitAppIsForegroung()) {
-                        return@launch
-                    }
-                    this@StartActivity.startMedialibrary(firstRun, upgrade, true, removeDevices)
-                    if (onboarding) settings.putSingle(ONBOARDING_DONE_KEY, true)
-                }
-            }.start()
+//            Thread {
+//                AppScope.launch {
+//                    // workaround for a Android 9 bug
+//                    // https://issuetracker.google.com/issues/113122354
+//                    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P && !awaitAppIsForegroung()) {
+//                        return@launch
+//                    }
+//                    this@StartActivity.startMedialibrary(firstRun, upgrade, true, removeDevices)
+//                    if (onboarding) settings.putSingle(ONBOARDING_DONE_KEY, true)
+//                }
+//            }.start()
             val mainIntent = Intent(Intent.ACTION_VIEW)
                     .setClassName(applicationContext, if (tv) TV_MAIN_ACTIVITY else MOBILE_MAIN_ACTIVITY)
                     .putExtra(EXTRA_FIRST_RUN, firstRun)

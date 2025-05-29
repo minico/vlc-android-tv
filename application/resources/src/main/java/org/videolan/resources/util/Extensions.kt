@@ -23,7 +23,7 @@ suspend inline fun <reified T> Context.getFromMl(crossinline block: Medialibrary
     val ml = Medialibrary.getInstance()
     if (ml.isStarted) block.invoke(ml)
     else {
-        val scan = Settings.getInstance(this@getFromMl).getInt(KEY_MEDIALIBRARY_SCAN, ML_SCAN_ON) == ML_SCAN_ON
+        //val scan = Settings.getInstance(this@getFromMl).getInt(KEY_MEDIALIBRARY_SCAN, ML_SCAN_ON) == ML_SCAN_ON
         suspendCancellableCoroutine { continuation ->
             val listener = object : Medialibrary.OnMedialibraryReadyListener {
                 override fun onMedialibraryReady() {
@@ -38,7 +38,7 @@ suspend inline fun <reified T> Context.getFromMl(crossinline block: Medialibrary
             }
             continuation.invokeOnCancellation { ml.removeOnMedialibraryReadyListener(listener) }
             ml.addOnMedialibraryReadyListener(listener)
-            startMedialibrary(false, false, scan)
+            startMedialibrary(false, false, false)
         }
     }
 }
