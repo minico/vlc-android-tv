@@ -42,6 +42,7 @@ import org.videolan.resources.util.startMedialibrary
 import org.videolan.tools.*
 import org.videolan.vlc.gui.BetaWelcomeActivity
 import org.videolan.vlc.gui.helpers.AudioUtil.setRingtone
+import org.videolan.vlc.gui.helpers.hf.StoragePermissionsDelegate.Companion.askStoragePermission
 import org.videolan.vlc.gui.helpers.hf.StoragePermissionsDelegate.Companion.getStoragePermission
 import org.videolan.vlc.gui.onboarding.ONBOARDING_DONE_KEY
 import org.videolan.vlc.gui.onboarding.startOnboarding
@@ -207,6 +208,7 @@ class StartActivity : FragmentActivity() {
 //                    if (onboarding) settings.putSingle(ONBOARDING_DONE_KEY, true)
 //                }
 //            }.start()
+            (this as? FragmentActivity)?.askStoragePermission(true, null);
             val mainIntent = Intent(Intent.ACTION_VIEW)
                     .setClassName(applicationContext, if (tv) TV_MAIN_ACTIVITY else MOBILE_MAIN_ACTIVITY)
                     .putExtra(EXTRA_FIRST_RUN, firstRun)

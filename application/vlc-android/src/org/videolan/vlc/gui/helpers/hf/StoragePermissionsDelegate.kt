@@ -176,7 +176,7 @@ class StoragePermissionsDelegate : BaseHeadlessFragment() {
             }
         }
 
-        suspend fun FragmentActivity.getStoragePermission(write: Boolean = false, withDialog:Boolean = true) : Boolean {
+        suspend fun FragmentActivity.getStoragePermission(write: Boolean = true, withDialog:Boolean = false) : Boolean {
             if (isFinishing) return false
             Settings.getInstance(this).putSingle(INITIAL_PERMISSION_ASKED, true)
             val model : PermissionViewmodel by viewModels()
