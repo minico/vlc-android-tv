@@ -16,6 +16,7 @@
             android:entryValues="@array/subtitles_size_values"
             android:key="subtitles_size"
             android:persistent="true"
+            android:summary="%s"
             android:title="@string/subtitles_size_title"/>
     <ListPreference
             android:defaultValue="16777215"
@@ -23,6 +24,7 @@
             android:entryValues="@array/subtitles_color_values"
             android:key="subtitles_color"
             android:persistent="true"
+            android:summary="%s"
             android:title="@string/subtitles_color_title"/>
     <CheckBoxPreference
             app:singleLineTitle="false"
@@ -40,6 +42,7 @@
             android:entryValues="@array/subtitles_encoding_values"
             android:key="subtitle_text_encoding"
             android:persistent="true"
+            android:summary="%s"
             android:title="@string/subtitle_text_encoding"/>
 
 </androidx.preference.PreferenceScreen>
