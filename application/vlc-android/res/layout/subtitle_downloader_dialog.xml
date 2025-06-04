@@ -53,6 +53,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:focusable="true"
                     android:padding="4dp"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/movieName"
                     app:layout_constraintEnd_toStartOf="@+id/sub_download_search"
                     app:layout_constraintHorizontal_bias="0.5"
