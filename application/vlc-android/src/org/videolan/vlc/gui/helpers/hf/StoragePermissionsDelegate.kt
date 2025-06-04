@@ -88,8 +88,8 @@ class StoragePermissionsDelegate : BaseHeadlessFragment() {
                 model.permissionRationaleShown = true
             }
             else
-                requestStorageAccess(false)
-        } else if (write) {
+                requestStorageAccess(true)
+        } else if (write && !Permissions.canWriteStorage(requireContext())) {
             if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) && !model.permissionRationaleShown) {
                 Permissions.showStoragePermissionDialog(requireActivity(), false)
                 model.permissionRationaleShown = true
@@ -135,11 +135,12 @@ class StoragePermissionsDelegate : BaseHeadlessFragment() {
             val uri = Uri.parse("package:${BuildConfig.APP_ID}")
             val intent = Intent(android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri)
             if (intent.isCallable(requireActivity())) {
-               if (withDialog) Permissions.showExternalPermissionDialog(requireActivity()) { asked ->
-                    if (asked) {
-                        askAllAccessPermission(intent)
-                    }
-                } else askAllAccessPermission(intent)
+//               if (withDialog) Permissions.showExternalPermissionDialog(requireActivity()) { asked ->
+//                    if (asked) {
+//                        askAllAccessPermission(intent)
+//                    }
+//                } else
+                    askAllAccessPermission(intent)
                 return
             }
         }
