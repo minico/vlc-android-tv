@@ -5,7 +5,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
@@ -17,6 +19,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.videolan.resources.AppContextProvider
+import org.videolan.resources.opensubtitles.OpenSubtitleRepository
 import org.videolan.tools.isStarted
 import org.videolan.vlc.R
 import org.videolan.vlc.gui.dialogs.SubtitleItem
@@ -64,7 +67,11 @@ object VLCDownloadManager: BroadcastReceiver(), LifecycleObserver {
     }
 
     suspend fun download(context: FragmentActivity, subtitleItem: SubtitleItem) {
-        val request = DownloadManager.Request(subtitleItem.zipDownloadLink.toUri())
+        val resp = OpenSubtitleRepository.getInstance().queryWithId(subtitleItem.idSubtitle)
+        if (resp.sub.subs.isEmpty()) return downloadFailed(0, context)
+        Log.i("VLCDownloadManager", "Downloading subtitle ${subtitleItem.idSubtitle} for ${subtitleItem.mediaUri.path} (${subtitleItem.movieReleaseName})")
+
+        val request = DownloadManager.Request(resp.sub.subs[0].downloadUrl.toUri())
         request.setDescription(subtitleItem.movieReleaseName)
         request.setTitle(context.resources.getString(R.string.download_subtitle_title))
         request.setVisibleInDownloadsUi(false)
@@ -79,11 +86,27 @@ object VLCDownloadManager: BroadcastReceiver(), LifecycleObserver {
     }
 
     private suspend fun downloadSuccessful(id:Long, subtitleItem: SubtitleItem, localUri: String, context: FragmentActivity) {
+        Log.i("VLCDownloadManager", "Subtitle ${subtitleItem.idSubtitle} downloaded successfully to $localUri")
+
         val extractDirectory = getFinalDirectory(context, subtitleItem) ?: return
-        val downloadedPaths = FileUtils.unpackZip(localUri, extractDirectory)
+
+        Log.i("VLCDownloadManager", "Extracting subtitle to $extractDirectory")
+
+        val uri = Uri.parse(localUri)
+        if (uri == null || uri.path == null) {
+            Log.e("VLCDownloadManager", "Invalid local URI: $localUri")
+            downloadFailed(id, context)
+            return
+        }
+
+        val downloadedPaths = FileUtils.unpackZip(uri.path!!, extractDirectory)
+
+        Log.i("VLCDownloadManager", "Downloaded paths: $downloadedPaths")
+
         subtitleItem.run {
             ExternalSubRepository.getInstance(context).removeDownloadingItem(id)
             downloadedPaths.forEach {
+                Log.i("VLCDownloadManager", "Subtitle: $it")
                 if (it.endsWith(".srt"))
                     ExternalSubRepository.getInstance(context).saveDownloadedSubtitle(idSubtitle, it, mediaUri.path!!, subLanguageID, movieReleaseName)
             }

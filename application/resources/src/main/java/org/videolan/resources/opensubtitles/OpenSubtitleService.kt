@@ -11,7 +11,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
 
-private const val BASE_URL = "https://rest.opensubtitles.org/search/"
+private const val BASE_URL = "https://api.assrt.net/v1/sub/"
 private const val USER_AGENT = "VLSub 0.9"
 
 private fun buildClient() = Retrofit.Builder()

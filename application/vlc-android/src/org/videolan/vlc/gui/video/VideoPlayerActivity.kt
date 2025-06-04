@@ -322,7 +322,11 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         }
 
     private val downloadedSubtitleObserver = Observer<List<org.videolan.vlc.mediadb.models.ExternalSub>> { externalSubs ->
+        Log.i(TAG, "Downloaded subtitles changed: $externalSubs")
+        Log.i(TAG, "addedExternalSubs: $addedExternalSubs")
+
         for (externalSub in externalSubs) {
+            Log.i(TAG, "Checking subtitle ${externalSub.subtitlePath} for media ${externalSub.mediaPath}")
             if (!addedExternalSubs.contains(externalSub)) {
                 service?.addSubtitleTrack(externalSub.subtitlePath, currentSpuTrack == -2)
                 addedExternalSubs.add(externalSub)

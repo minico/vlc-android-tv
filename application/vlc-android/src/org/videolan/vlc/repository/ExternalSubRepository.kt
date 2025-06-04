@@ -22,6 +22,7 @@ package org.videolan.vlc.repository
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import kotlinx.coroutines.GlobalScope
@@ -34,6 +35,7 @@ import org.videolan.vlc.gui.dialogs.State
 import org.videolan.vlc.gui.dialogs.SubtitleItem
 import org.videolan.tools.CoroutineContextProvider
 import org.videolan.tools.livedata.LiveDataMap
+import org.videolan.vlc.providers.TAG
 import java.io.File
 
 class ExternalSubRepository(private val externalSubDao: ExternalSubDao, private val coroutineContextProvider: CoroutineContextProvider = CoroutineContextProvider()) {
@@ -52,6 +54,7 @@ class ExternalSubRepository(private val externalSubDao: ExternalSubDao, private 
         return Transformations.map(externalSubs) { list ->
             val existExternalSubs: MutableList<org.videolan.vlc.mediadb.models.ExternalSub> = mutableListOf()
             list.forEach {
+                Log.i(TAG, "Checking subtitle ${it.subtitlePath} for media ${it.mediaPath}")
                 if (File(Uri.decode(it.subtitlePath)).exists())
                     existExternalSubs.add(it)
                 else

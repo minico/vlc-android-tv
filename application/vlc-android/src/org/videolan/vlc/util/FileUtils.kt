@@ -37,6 +37,7 @@ import androidx.annotation.WorkerThread
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import kotlinx.coroutines.*
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
 import org.videolan.libvlc.util.AndroidUtil
 import org.videolan.medialibrary.interfaces.Medialibrary
 import org.videolan.medialibrary.interfaces.media.MediaWrapper
@@ -440,13 +441,17 @@ object FileUtils {
     }
 
     suspend fun unpackZip(path: String, unzipDirectory: String): ArrayList<String> = withContext(Dispatchers.IO) {
+        Log.i(TAG, "Unzipping $path to $unzipDirectory")
         val fis: InputStream
-        val zis: ZipInputStream
+        //val zis: ZipInputStream
+        val zis: ZipArchiveInputStream
         val unzippedFiles = ArrayList<String>()
         File(unzipDirectory).mkdirs()
         try {
             fis = FileInputStream(path)
-            zis = ZipInputStream(BufferedInputStream(fis))
+            //zis = ZipInputStream(BufferedInputStream(fis))
+            zis = ZipArchiveInputStream(BufferedInputStream(fis))
+
             var ze = zis.nextEntry
 
             while (ze != null) {
@@ -456,7 +461,7 @@ object FileUtils {
 
                 val filename = ze.name.replace('/', ' ')
                 if (filename.endsWith(".nfo")) {
-                    zis.closeEntry()
+                    //zis.closeEntry()
                     ze = zis.nextEntry
                     continue
                 }
@@ -474,7 +479,7 @@ object FileUtils {
 
                 unzippedFiles.add(fileToUnzip.absolutePath)
                 fout.close()
-                zis.closeEntry()
+                //zis.closeEntry()
                 ze = zis.nextEntry
             }
             zis.close()

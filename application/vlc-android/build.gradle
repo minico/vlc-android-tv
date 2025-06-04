@@ -194,6 +194,9 @@ dependencies {
     implementation 'com.hierynomus:smbj:0.10.0'
     implementation 'eu.agno3.jcifs:jcifs-ng:2.1.6'
 
+    //unzip
+    implementation 'org.apache.commons:commons-compress:1.21'
+
     // Tests
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$rootProject.espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"

@@ -9,73 +9,67 @@ class OpenSubtitleRepository(private val openSubtitleService: IOpenSubtitleServi
         3) precedence: (movieBytesize and moviehash) > imdbid > name
     */
 
-    suspend fun queryWithImdbid(imdbId: Int, tag: String?, episode: Int? , season: Int?, languageId: String? ): List<OpenSubtitle> {
+//    suspend fun queryWithImdbid(imdbId: Int, tag: String?, episode: Int? , season: Int?, languageId: String? ): List<OpenSubtitle> {
+//        val actualEpisode = episode ?: 0
+//        val actualSeason = season ?: 0
+//        val actualLanguageId = languageId ?: ""
+//        val actualTag = tag ?: ""
+//        return openSubtitleService.query(
+//                imdbId = String.format("%07d", imdbId),
+//                tag = actualTag,
+//                episode = actualEpisode,
+//                season = actualSeason,
+//                languageId = actualLanguageId)
+//    }
+//
+//    suspend fun queryWithHash(movieByteSize: Long, movieHash: String, languageId: String?): List<OpenSubtitle> {
+//        val actualLanguageId = languageId ?: ""
+//        return openSubtitleService.query(
+//                movieByteSize = movieByteSize.toString(),
+//                movieHash = movieHash,
+//                languageId = actualLanguageId)
+//    }
+
+    suspend fun queryWithName(name: String, episode: Int?, season: Int?, languageId: String?): AssrtResponse {
         val actualEpisode = episode ?: 0
         val actualSeason = season ?: 0
         val actualLanguageId = languageId ?: ""
-        val actualTag = tag ?: ""
-        return openSubtitleService.query(
-                imdbId = String.format("%07d", imdbId),
-                tag = actualTag,
-                episode = actualEpisode,
-                season = actualSeason,
-                languageId = actualLanguageId)
+        return openSubtitleService.queryByName(q = name)
     }
 
-    suspend fun queryWithHash(movieByteSize: Long, movieHash: String, languageId: String?): List<OpenSubtitle> {
-        val actualLanguageId = languageId ?: ""
-        return openSubtitleService.query(
-                movieByteSize = movieByteSize.toString(),
-                movieHash = movieHash,
-                languageId = actualLanguageId)
-    }
+//    suspend fun queryWithImdbid(imdbId: Int, tag: String?, episode: Int? , season: Int?, languageIds: List<String>? ): List<OpenSubtitle> {
+//        val actualEpisode = episode ?: 0
+//        val actualSeason = season ?: 0
+//        val actualLanguageIds = languageIds?.toSet()?.run { if (contains("") || isEmpty()) setOf("") else this } ?: setOf("")
+//        val actualTag = tag ?: ""
+//        return actualLanguageIds.flatMap {
+//            openSubtitleService.query(
+//                    imdbId = String.format("%07d", imdbId),
+//                    tag = actualTag,
+//                    episode = actualEpisode,
+//                    season = actualSeason,
+//                    languageId = it) }
+//    }
+//
+//    suspend fun queryWithHash(movieByteSize: Long, movieHash: String?, languageIds: List<String>?): List<OpenSubtitle> {
+//        val actualLanguageIds = languageIds?.toSet()?.run { if (contains("") || isEmpty()) setOf("") else this } ?: setOf("")
+//        return actualLanguageIds.flatMap {
+//            openSubtitleService.query(
+//                    movieByteSize = movieByteSize.toString(),
+//                    movieHash = movieHash ?: "",
+//                    languageId = it)
+//        }
+//    }
 
-    suspend fun queryWithName(name: String, episode: Int?, season: Int?, languageId: String?): List<OpenSubtitle> {
-        val actualEpisode = episode ?: 0
-        val actualSeason = season ?: 0
-        val actualLanguageId = languageId ?: ""
-        return openSubtitleService.query(
-                name = name,
-                episode = actualEpisode,
-                season = actualSeason,
-                languageId = actualLanguageId)
-    }
-
-    suspend fun queryWithImdbid(imdbId: Int, tag: String?, episode: Int? , season: Int?, languageIds: List<String>? ): List<OpenSubtitle> {
-        val actualEpisode = episode ?: 0
-        val actualSeason = season ?: 0
-        val actualLanguageIds = languageIds?.toSet()?.run { if (contains("") || isEmpty()) setOf("") else this } ?: setOf("")
-        val actualTag = tag ?: ""
-        return actualLanguageIds.flatMap {
-            openSubtitleService.query(
-                    imdbId = String.format("%07d", imdbId),
-                    tag = actualTag,
-                    episode = actualEpisode,
-                    season = actualSeason,
-                    languageId = it) }
-    }
-
-    suspend fun queryWithHash(movieByteSize: Long, movieHash: String?, languageIds: List<String>?): List<OpenSubtitle> {
-        val actualLanguageIds = languageIds?.toSet()?.run { if (contains("") || isEmpty()) setOf("") else this } ?: setOf("")
-        return actualLanguageIds.flatMap {
-            openSubtitleService.query(
-                    movieByteSize = movieByteSize.toString(),
-                    movieHash = movieHash ?: "",
-                    languageId = it)
-        }
-    }
-
-    suspend fun queryWithName(name: String, episode: Int?, season: Int?, languageIds: List<String>?): List<OpenSubtitle> {
+    suspend fun queryWithName(name: String, episode: Int?, season: Int?, languageIds: List<String>?): AssrtResponse {
         val actualEpisode = episode ?: 0
         val actualSeason = season ?: 0
         val actualLanguageIds = languageIds?.toSet()?.run { if (contains("") || isEmpty()) setOf("") else this } ?: setOf("")
-        return actualLanguageIds.flatMap {
-            openSubtitleService.query(
-                    name = name,
-                    episode = actualEpisode,
-                    season = actualSeason,
-                    languageId = it)
-        }
+        return openSubtitleService.queryByName(q = name)
+    }
+
+    suspend fun queryWithId(id: String): AssrtResponse {
+        return openSubtitleService.queryById(id = id.toInt())
     }
 
     companion object {

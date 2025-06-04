@@ -1,20 +1,22 @@
 package org.videolan.resources.opensubtitles
 
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 //Passing 0 for numbers and "" for strings ignores that parameters
 interface IOpenSubtitleService {
-    @GET("episode-{episode}/imdbid-{imdbId}/moviebytesize-{movieByteSize}/moviehash-{movieHash}/query-{name}/season-{season}/sublanguageid-{subLanguageId}/tag_{tag}")
-    suspend fun query( @Path("movieByteSize") movieByteSize: String = "",
-               @Path("movieHash") movieHash: String = "",
-               @Path("name") name: String = "",
-               @Path("imdbId") imdbId: String = "" ,
-               @Path("tag") tag: String = "",
-               @Path("episode") episode: Int = 0,
-               @Path("season") season: Int = 0,
-               @Path("subLanguageId") languageId: String = ""): List<OpenSubtitle>
+    @GET("search")
+    suspend fun queryByName(@Query("token") token: String = "VJmwTuuEU5QR2dGQYxftQVElKnNygTj6",
+                            @Query("q") q: String,
+                            @Query("filelist") filelist: Int = 1,
+                            @Query("cnt") cnt: Int = 15,
+                            @Query("is_file") is_file: Int = 0,
+                            @Query("no_muxer") no_muxer: Int = 1): AssrtResponse
 
+
+    @GET("detail")
+    suspend fun queryById(@Query("token") token: String = "VJmwTuuEU5QR2dGQYxftQVElKnNygTj6",
+                          @Query("id") id: Int): AssrtResponse
 }
 
 

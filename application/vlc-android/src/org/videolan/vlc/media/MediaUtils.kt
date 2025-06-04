@@ -75,8 +75,9 @@ object MediaUtils {
         val callBack = java.lang.Runnable {
             SubtitleDownloaderDialogFragment.newInstance(mediaUris, mediaTitles).show(activity.supportFragmentManager, "Subtitle_downloader")
         }
-        if (Permissions.canWriteStorage()) callBack.run()
-        else Permissions.askWriteStoragePermission(activity, false, callBack)
+        //if (Permissions.canWriteStorage()) callBack.run()
+        //else Permissions.askWriteStoragePermission(activity, false, callBack)
+        callBack.run()
     }
 
     suspend fun deleteMedia(mw: MediaLibraryItem, failCB: Runnable? = null) = withContext(Dispatchers.IO) {

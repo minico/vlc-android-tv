@@ -1,65 +1,63 @@
 package org.videolan.resources.opensubtitles
 import com.squareup.moshi.Json
 
+data class AssrtSub(
+        @field:Json(name = "subs") val subs: List<OpenSubtitle>,
+        @field:Json(name = "action") val action: String,
+        @field:Json(name = "keyword") val keyword: String,
+        @field:Json(name = "result") val result: String
+)
+
+data class AssrtResponse(
+        @field:Json(name = "status") val status: Int,
+        @field:Json(name = "sub") val sub: AssrtSub
+)
+
+data class SubLangList(
+        @field:Json(name = "langdou") val langdou: Boolean, //是否支持多语言字幕
+        @field:Json(name = "langchs") val langchs: Boolean, //是否支持中文字幕
+        @field:Json(name = "langeng") val langeng: Boolean //是否支持英文字幕
+)
+
+data class SubLang(
+        @field:Json(name = "langlist") val langList: SubLangList, //字幕语言列表
+        @field:Json(name = "desc") val desc: String, //字幕语言描述
+)
+
+data class SubFileList(
+        @field:Json(name = "s") val fileSize: Int, //文件大小
+        @field:Json(name = "f") val fileName: String, //文件名
+        @field:Json(name = "url") val fileUrl: String, //文件地址
+)
+
+data class SubProducer(
+        @field:Json(name = "uploader") val uploader: String, //上传者
+        @field:Json(name = "verifier") val verifier: String, //校订者
+        @field:Json(name = "producer") val producer: String, //制作者
+        @field:Json(name = "source") val source: String, //字幕来源
+)
+
 data class OpenSubtitle(
-        @field:Json(name = "MatchedBy") val matchedBy: String,
-        @field:Json(name = "IDSubMovieFile") val idSubMovieFile: String,
-        @field:Json(name = "MovieHash") val movieHash: String,
-        @field:Json(name = "MovieByteSize") val movieByteSize: String,
-        @field:Json(name = "MovieTimeMS") val movieTimeMS: String,
-        @field:Json(name = "IDSubtitleFile") val idSubtitleFile: String,
-        @field:Json(name = "SubFileName") val subFileName: String,
-        @field:Json(name = "SubActualCD") val subActualCD: String,
-        @field:Json(name = "SubSize") val subSize: String,
-        @field:Json(name = "SubHash") val subHash: String,
-        @field:Json(name = "SubLastTS") val subLastTS: String,
-        @field:Json(name = "SubTSGroup") val subTSGroup: String,
-        @field:Json(name = "InfoReleaseGroup") val infoReleaseGroup: String,
-        @field:Json(name = "InfoFormat") val infoFormat: String,
-        @field:Json(name = "InfoOther") val infoOther: String,
-        @field:Json(name = "IDSubtitle") val idSubtitle: String,
-        @field:Json(name = "UserID") val userID: String,
-        @field:Json(name = "SubLanguageID") val subLanguageID: String,
-        @field:Json(name = "SubFormat") val subFormat: String,
-        @field:Json(name = "SubSumCD") val subSumCD: String,
-        @field:Json(name = "SubAuthorComment") val subAuthorComment: String,
-        @field:Json(name = "SubAddDate") val subAddDate: String,
-        @field:Json(name = "SubBad") val subBad: String,
-        @field:Json(name = "SubRating") val subRating: String,
-        @field:Json(name = "SubSumVotes") val subSumVotes: String,
-        @field:Json(name = "SubDownloadsCnt") val subDownloadsCnt: String,
-        @field:Json(name = "MovieReleaseName") val movieReleaseName: String,
-        @field:Json(name = "MovieFPS") val movieFPS: String,
-        @field:Json(name = "IDMovie") val idMovie: String,
-        @field:Json(name = "IDMovieImdb") val idMovieImdb: String,
-        @field:Json(name = "MovieName") val movieName: String,
-        @field:Json(name = "MovieNameEng") val movieNameEng: Any,
-        @field:Json(name = "MovieYear") val movieYear: String,
-        @field:Json(name = "MovieImdbRating") val movieImdbRating: Any,
-        @field:Json(name = "SubFeatured") val subFeatured: String,
-        @field:Json(name = "UserNickName") val userNickName: String,
-        @field:Json(name = "SubTranslator") val subTranslator: String,
-        @field:Json(name = "ISO639") val iSO639: String,
-        @field:Json(name = "LanguageName") val languageName: String,
-        @field:Json(name = "SubComments") val subComments: String,
-        @field:Json(name = "SubHearingImpaired") val subHearingImpaired: String,
-        @field:Json(name = "UserRank") val userRank: String,
-        @field:Json(name = "SeriesSeason") val seriesSeason: String,
-        @field:Json(name = "SeriesEpisode") val seriesEpisode: String,
-        @field:Json(name = "MovieKind") val movieKind: String,
-        @field:Json(name = "SubHD") val subHD: String,
-        @field:Json(name = "SeriesIMDBParent") val seriesIMDBParent: String,
-        @field:Json(name = "SubEncoding") val subEncoding: String,
-        @field:Json(name = "SubAutoTranslation") val subAutoTranslation: String,
-        @field:Json(name = "SubForeignPartsOnly") val subForeignPartsOnly: String,
-        @field:Json(name = "SubFromTrusted") val subFromTrusted: String,
-        @field:Json(name = "QueryParameters") val queryParameters: QueryParameters,
-        @field:Json(name = "SubTSGroupHash") val subTSGroupHash: String,
-        @field:Json(name = "SubDownloadLink") val subDownloadLink: String,
-        @field:Json(name = "ZipDownloadLink") val zipDownloadLink: String,
-        @field:Json(name = "SubtitlesLink") val subtitlesLink: String,
-        @field:Json(name = "QueryNumber") val queryNumber: String,
-        @field:Json(name = "Score") val score: Double
+        @field:Json(name = "id") val id: Int, //字幕ID
+        @field:Json(name = "native_name") val nativeName: String, //影片原始名称
+        @field:Json(name = "revision") val revision: Int, //字幕的修订版本ID，如不存在则为0
+        @field:Json(name = "upload_time") val uploadTime: String, //上传时间
+        @field:Json(name = "subtype") val subType: String, //字幕格式
+        @field:Json(name = "vote_score") val voteScore: Int, //用户评分，如果没有人评分则为0
+        @field:Json(name = "release_site") val releaseSite: String, //发行的字幕组名称 (可选)
+        @field:Json(name = "videoname") val videoName: String, //字幕匹配的视频文件名 (可选)
+        @field:Json(name = "vote_machine_translate") val voteMachineTranslate: String, //用户评价此字幕为机器翻译字幕 (可选)
+        @field:Json(name = "lang") val lang: SubLang, //字幕语言 (可选)
+
+        //Details by subtitle id
+//        @field:Json(name = "filename") val fileName: String, //字幕文件名
+//        @field:Json(name = "size") val fileSize: Int, //字幕文件大小
+        @field:Json(name = "url") val downloadUrl: String, //字幕下载地址
+//        @field:Json(name = "view_count ") val viewCount : Int, //字幕浏览次数
+//        @field:Json(name = "down_count") val downloadCount: Int, //字幕下载次数
+//        @field:Json(name = "title") val title: String, //字幕标题
+//        @field:Json(name = "filelist") val fileList: SubFileList, //字幕压缩包内含的文件列表 (可选)
+//        @field:Json(name = "producer") val producer: SubProducer, //发布人 (可选)
 )
 
 data class QueryParameters(
