@@ -5,14 +5,17 @@ import android.net.Uri
 import android.text.Html
 import android.text.Spanned
 import android.util.Log
+import android.widget.Toast
 import androidx.databinding.Observable
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
+import com.squareup.moshi.JsonDataException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import org.videolan.resources.opensubtitles.AssrtResponse
 import org.videolan.resources.util.NoConnectivityException
 import org.videolan.tools.Settings
@@ -25,6 +28,7 @@ import org.videolan.resources.opensubtitles.OpenSubtitleRepository
 import org.videolan.tools.CoroutineContextProvider
 import org.videolan.tools.putSingle
 import org.videolan.vlc.BuildConfig
+import retrofit2.HttpException
 import java.util.*
 
 private const val LAST_USED_LANGUAGES = "last_used_subtitles"
@@ -36,6 +40,7 @@ class SubtitlesModel(private val context: Context, private val mediaUri: Uri, pr
     val observableSearchLanguage = ObservableField<List<String>>()
     private var previousSearchLanguage: List<String>? = null
     val manualSearchEnabled = ObservableBoolean(false)
+    val title = name
 
     val isApiLoading: MediatorLiveData<Boolean> = MediatorLiveData()
     val observableMessage = ObservableField<String>()
@@ -107,7 +112,7 @@ class SubtitlesModel(private val context: Context, private val mediaUri: Uri, pr
                     SubtitleItem(
                         openSubtitle.id.toString(),
                         mediaUri,
-                        openSubtitle.lang.desc,
+                        openSubtitle.lang?.desc ?: "未知",
                         openSubtitle.nativeName,
                         state,
                         ""
@@ -118,22 +123,26 @@ class SubtitlesModel(private val context: Context, private val mediaUri: Uri, pr
         list
     }
 
-    private suspend fun getSubtitleByName(name: String, episode: Int?, season: Int?, languageIds: List<String>?): AssrtResponse {
-        if (BuildConfig.DEBUG) Log.d(this::class.java.simpleName, "Getting subs by name with $name")
-        val builder = StringBuilder(context.getString(R.string.sub_result_by_name, "<i>$name</i>"))
-        season?.let { builder.append(" - ").append(context.getString(R.string.sub_result_by_name_season, "<i>$it</i>")) }
-        episode?.let { builder.append(" - ").append(context.getString(R.string.sub_result_by_name_episode, "<i>$it</i>")) }
-        observableResultDescription.set(Html.fromHtml(builder.toString()))
-        manualSearchEnabled.set(true)
-        return OpenSubtitleRepository.getInstance().queryWithName(name, episode, season, languageIds)
+    fun processOriginalName(input: String): String {
+        val regex = Regex("\\d+")
+        val matches = regex.findAll(input)
+        for (match in matches) {
+            val prefix = input.substring(0, match.range.first)
+            if (prefix.length >= 3) {
+                return prefix.replace('.', ' ')
+            }
+        }
+        return input.replace('.', ' ')
     }
 
-//    private suspend fun getSubtitleByHash(movieByteSize: Long, movieHash: String?, languageIds: List<String>?): List<OpenSubtitle> {
-//        if (BuildConfig.DEBUG) Log.d(this::class.java.simpleName, "Getting subs by hash with $movieHash")
-//        manualSearchEnabled.set(false)
-//        observableResultDescription.set(context.getString(R.string.sub_result_by_file).toSpanned())
-//        return OpenSubtitleRepository.getInstance().queryWithHash(movieByteSize, movieHash, languageIds)
-//    }
+    private suspend fun getSubtitleByName(name: String): AssrtResponse {
+        Log.i(this::class.java.simpleName, "Getting subs by name with $name")
+        val splitedName = processOriginalName(name)
+        val builder = StringBuilder(context.getString(R.string.sub_result_by_name, "<i>$splitedName</i>"))
+        observableResultDescription.set(Html.fromHtml(builder.toString()))
+        manualSearchEnabled.set(true)
+        return OpenSubtitleRepository.getInstance().queryWithName(splitedName)
+    }
 
     fun onRefresh() {
         if (manualSearchEnabled.get() && observableSearchName.get().isNullOrEmpty()) {
@@ -152,29 +161,54 @@ class SubtitlesModel(private val context: Context, private val mediaUri: Uri, pr
 
         searchJob = viewModelScope.launch {
             try {
-                val resp = if (byFile) {
+                var resp = if (byFile) {
                     withContext(coroutineContextProvider.IO) {
-//                        val videoFile = File(mediaUri.path)
-//                        if (videoFile.exists()) {
-//                            val hash = FileUtils.computeHash(videoFile)
-//                            val fileLength = videoFile.length()
-//                            val hashSubs = getSubtitleByHash(fileLength, hash, observableSearchLanguage.get())
-//                            // No result for hash. Falling back to name search
-//                            if (hashSubs.isEmpty()) getSubtitleByName(videoFile.name, null, null, observableSearchLanguage.get()) else hashSubs
-//                        } else {
-//                            getSubtitleByName(name, null, null, observableSearchLanguage.get())
-//                        }
-                        getSubtitleByName(name, null, null, observableSearchLanguage.get())
+                        getSubtitleByName(name)
                     }
                 } else {
                     observableSearchName.get()?.let {
-                        getSubtitleByName(it, observableSearchEpisode.get()?.toInt(), observableSearchSeason.get()?.toInt(), observableSearchLanguage.get())
+                        getSubtitleByName(it)
                     } ?: null
                 }
-                if (isActive) apiResultLiveData.postValue(resp?.sub?.subs)
-                if (resp == null) observableMessage.set(context.getString(R.string.no_result))
+
+                if (resp != null) {
+                    when (resp.status ) {
+                        0 -> if (isActive) apiResultLiveData.postValue(resp?.sub?.subs)
+                        1 -> observableMessage.set("用户不存在")
+                        101 -> observableMessage.set("搜索关键字长度必须大于3")
+                    }
+                } else {
+                    observableMessage.set(context.getString(R.string.no_result))
+                    Log.e("SubtitlesModel", "No subtitles found for $name")
+                }
+            } catch(e: JsonDataException) {
+                Log.e("SubtitlesModel", "Error parsing response", e)
+                observableMessage.set("Json 解析错误，可能字幕列表为空")
+            } catch (e: HttpException) {
+                try {
+                    val jBody = JSONObject(e.response()?.errorBody()?.string())
+                    if (jBody != null) {
+                        val status = jBody.getInt("status")
+                        when (status) {
+                            20000 -> observableMessage.set("请求缺少参数")
+                            20001 -> observableMessage.set("Token 不存在")
+                            20400 -> observableMessage.set("API 终结点不存在")
+                            20900 -> observableMessage.set("字幕不存在")
+                            30000 -> observableMessage.set("服务器抽风了")
+                            30001 -> observableMessage.set("数据库挂了")
+                            30002 -> observableMessage.set("搜索引擎挂了")
+                            30300 -> observableMessage.set("站长代码少打了一个分号")
+                            30900 -> observableMessage.set("配额超限了")
+                            else -> observableMessage.set("未知错误")
+                        }
+                    }
+                } catch (je: Exception) {
+                    Log.e("SubtitlesModel", "Error parsing error response", je)
+                    observableMessage.set(context.getString(R.string.subs_download_error))
+                }
             } catch (e: Exception) {
                 Log.e("SubtitlesModel", e.message, e)
+                observableMessage.set(e.message)
                 if (e is NoConnectivityException)
                     observableMessage.set(context.getString(R.string.no_internet_connection))
                 else

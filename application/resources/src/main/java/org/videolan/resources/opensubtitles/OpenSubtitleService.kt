@@ -2,6 +2,7 @@ package org.videolan.resources.opensubtitles
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import org.videolan.resources.AppContextProvider

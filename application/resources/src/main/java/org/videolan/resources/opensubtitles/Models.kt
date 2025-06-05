@@ -47,7 +47,7 @@ data class OpenSubtitle(
         @field:Json(name = "release_site") val releaseSite: String, //发行的字幕组名称 (可选)
         @field:Json(name = "videoname") val videoName: String, //字幕匹配的视频文件名 (可选)
         @field:Json(name = "vote_machine_translate") val voteMachineTranslate: String, //用户评价此字幕为机器翻译字幕 (可选)
-        @field:Json(name = "lang") val lang: SubLang, //字幕语言 (可选)
+        @field:Json(name = "lang") val lang: SubLang?, //字幕语言 (可选)
 
         //Details by subtitle id
 //        @field:Json(name = "filename") val fileName: String, //字幕文件名

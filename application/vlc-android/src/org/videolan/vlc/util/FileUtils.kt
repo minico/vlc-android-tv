@@ -33,6 +33,7 @@ import android.os.ParcelFileDescriptor
 import android.os.storage.StorageManager
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.WorkerThread
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
@@ -447,45 +448,41 @@ object FileUtils {
         val zis: ZipArchiveInputStream
         val unzippedFiles = ArrayList<String>()
         File(unzipDirectory).mkdirs()
-        try {
-            fis = FileInputStream(path)
-            //zis = ZipInputStream(BufferedInputStream(fis))
-            zis = ZipArchiveInputStream(BufferedInputStream(fis))
+        fis = FileInputStream(path)
+        //zis = ZipInputStream(BufferedInputStream(fis))
+        zis = ZipArchiveInputStream(fis)
 
-            var ze = zis.nextEntry
+        var ze = zis.nextEntry
 
-            while (ze != null) {
-                val baos = ByteArrayOutputStream()
-                val buffer = ByteArray(1024)
-                var count = zis.read(buffer)
+        while (ze != null) {
+            val baos = ByteArrayOutputStream()
+            val buffer = ByteArray(1024)
+            var count = zis.read(buffer)
 
-                val filename = ze.name.replace('/', ' ')
-                if (filename.endsWith(".nfo")) {
-                    //zis.closeEntry()
-                    ze = zis.nextEntry
-                    continue
-                }
-                val fileToUnzip = File(unzipDirectory, filename)
-                val fout = FileOutputStream(fileToUnzip)
-
-                // reading and writing
-                while (count != -1) {
-                    baos.write(buffer, 0, count)
-                    val bytes = baos.toByteArray()
-                    fout.write(bytes)
-                    baos.reset()
-                    count = zis.read(buffer)
-                }
-
-                unzippedFiles.add(fileToUnzip.absolutePath)
-                fout.close()
+            val filename = ze.name.replace('/', ' ')
+            if (filename.endsWith(".nfo")) {
                 //zis.closeEntry()
                 ze = zis.nextEntry
+                continue
             }
-            zis.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
+            val fileToUnzip = File(unzipDirectory, filename)
+            val fout = FileOutputStream(fileToUnzip)
+
+            // reading and writing
+            while (count != -1) {
+                baos.write(buffer, 0, count)
+                val bytes = baos.toByteArray()
+                fout.write(bytes)
+                baos.reset()
+                count = zis.read(buffer)
+            }
+
+            unzippedFiles.add(fileToUnzip.absolutePath)
+            fout.close()
+            //zis.closeEntry()
+            ze = zis.nextEntry
         }
+        zis.close()
         unzippedFiles
     }
 

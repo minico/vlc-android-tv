@@ -38,7 +38,7 @@ class SubtitleDownloaderDialogFragment : VLCBottomSheetDialogFragment() {
 
     override fun needToManageOrientation(): Boolean = true
 
-    override fun initialFocusedView(): View = binding.languageListSpinner
+    override fun initialFocusedView(): View = binding.scrollView
 
     private lateinit var downloadAdapter: SubtitlesAdapter
     private lateinit var historyAdapter: SubtitlesAdapter
@@ -47,6 +47,7 @@ class SubtitleDownloaderDialogFragment : VLCBottomSheetDialogFragment() {
     private lateinit var names: List<String>
     private lateinit var viewModel: SubtitlesModel
     private lateinit var toast: Toast
+    private var searchManual = false
 
     private var state: SubDownloadDialogState = SubDownloadDialogState.Download
         set(value) {
@@ -125,7 +126,7 @@ class SubtitleDownloaderDialogFragment : VLCBottomSheetDialogFragment() {
             viewModel.search(false)
             focusOnView(binding.scrollView)
             state = SubDownloadDialogState.Download
-
+            searchManual = true;
         }
         binding.cancelButton.setOnClickListener {
             state = SubDownloadDialogState.Download
@@ -135,21 +136,16 @@ class SubtitleDownloaderDialogFragment : VLCBottomSheetDialogFragment() {
             UiTools.setKeyboardVisibility(binding.name, true)
             binding.name.requestFocus()
             state = SubDownloadDialogState.Search
+            binding.name.setText(viewModel.observableSearchName.get() ?: viewModel.title)
         }
 
         binding.subDownloadHistory.setOnClickListener {
             state = if (state == SubDownloadDialogState.History) SubDownloadDialogState.Download else SubDownloadDialogState.History
         }
 
-        binding.languageListSpinner.setOnItemsSelectListener(object : OnItemSelectListener {
-            override fun onItemSelect(selectedItems: List<Int>) {
-                val selectedLanguages = if (selectedItems.size == binding.languageListSpinner.allValuesOfLanguages.size) listOf<String>()
-                else selectedItems.filter { it in binding.languageListSpinner.allValuesOfLanguages.indices }.map { binding.languageListSpinner.allValuesOfLanguages[it] }
-                viewModel.observableSearchLanguage.set(selectedLanguages)
-            }
-        })
-
-        binding.languageListSpinner.setSelection(viewModel.getLastUsedLanguage().map { binding.languageListSpinner.allValuesOfLanguages.indexOf(it) })
+        binding.languageListSpinner.setOnClickListener{
+            viewModel.search(!searchManual)
+        }
 
         binding.episode.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE || event.keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -158,6 +154,8 @@ class SubtitleDownloaderDialogFragment : VLCBottomSheetDialogFragment() {
             }
              false
         }
+
+        viewModel.search(true)
 
         return binding.root
     }

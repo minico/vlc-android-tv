@@ -45,7 +45,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Game of Thrones - S01e01" />
 
-            <org.videolan.vlc.gui.view.LanguageSelector
+            <ImageView
                     android:id="@+id/language_list_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -53,12 +53,12 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:focusable="true"
                     android:padding="4dp"
-                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/movieName"
                     app:layout_constraintEnd_toStartOf="@+id/sub_download_search"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/movieName"
-                    app:layout_constraintTop_toTopOf="@+id/movieName" />
+                    app:layout_constraintTop_toTopOf="@+id/movieName"
+                    app:srcCompat="@drawable/ic_menu_refresh" />
 
             <ImageView
                     android:id="@+id/sub_download_search"
@@ -202,7 +202,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:visibility="@{state == state.Search ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{state == state.Search ? View.GONE : View.GONE}"
                     app:layout_constraintStart_toStartOf="@+id/nameContainer"
                     app:layout_constraintTop_toBottomOf="@+id/nameContainer">
 
@@ -218,7 +218,7 @@
                         android:nextFocusDown="@+id/episode"
                         android:nextFocusForward="@+id/episode"
                         android:text="@={viewmodel.observableSearchSeason}"
-                        android:visibility="@{state == state.Search ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{state == state.Search ? View.GONE : View.GONE}"
                         app:layout_constraintHorizontal_chainStyle="spread_inside" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -227,7 +227,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:visibility="@{state == state.Search ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{state == state.Search ? View.GONE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/seasonContainer"
                     app:layout_constraintStart_toEndOf="@+id/seasonContainer"
                     app:layout_constraintTop_toTopOf="@+id/seasonContainer">
@@ -245,7 +245,7 @@
                         android:nextFocusForward="@+id/search_button"
                         android:imeOptions="actionDone"
                         android:text="@={viewmodel.observableSearchEpisode}"
-                        android:visibility="@{state == state.Search ? View.VISIBLE : View.GONE}" />
+                        android:visibility="@{state == state.Search ? View.GONE : View.GONE}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
