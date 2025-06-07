@@ -188,7 +188,8 @@ class SubtitleDownloaderDialogFragment : VLCBottomSheetDialogFragment() {
     }
 
     private fun focusOnView(scrollView: NestedScrollView) {
-        scrollView.smoothScrollTo(0, 0)
+        //scrollView.smoothScrollTo(0, 0)
+        scrollView.requestFocus()
     }
 
     companion object {
