@@ -124,15 +124,17 @@ class SubtitlesModel(private val context: Context, private val mediaUri: Uri, pr
     }
 
     fun processOriginalName(input: String): String {
+        val noSufix = input.removeSuffix(".mp4").removeSuffix(".mkv").removeSuffix(".avi")
+                        .removeSuffix(".ts").removeSuffix(".webm").removeSuffix(".flv")
         val regex = Regex("\\d+")
-        val matches = regex.findAll(input)
+        val matches = regex.findAll(noSufix)
         for (match in matches) {
-            val prefix = input.substring(0, match.range.first)
+            val prefix = noSufix.substring(0, match.range.first)
             if (prefix.length >= 3) {
                 return prefix.replace('.', ' ')
             }
         }
-        return input.replace('.', ' ')
+        return noSufix.replace('.', ' ')
     }
 
     private suspend fun getSubtitleByName(name: String): AssrtResponse {

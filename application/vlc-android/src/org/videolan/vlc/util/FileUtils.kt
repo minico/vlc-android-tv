@@ -443,6 +443,22 @@ object FileUtils {
         return volumeDescription
     }
 
+    fun renameFile(oldPath: String, newPath: String): Boolean {
+        val oldFile = File(oldPath)
+        val newFile = File(newPath)
+
+        if (!oldFile.exists()) {
+            Log.e(TAG, "旧文件不存在:" + oldPath)
+            return false
+        }
+        if (newFile.exists()) {
+            Log.e(TAG, "目标文件已存在:" + newPath)
+            return false
+        }
+
+        return oldFile.renameTo(newFile)
+    }
+
     fun extractRar(inputFile: String, outputDir: String, extractedFiles: ArrayList<String>) {
         val archiveFile = File(inputFile)
         val outDir = File(outputDir)
@@ -454,7 +470,7 @@ object FileUtils {
 
         try {
             raf = RandomAccessFile(archiveFile, "r")
-            archive = SevenZip.openInArchive(ArchiveFormat.RAR5, RandomAccessFileInStream(raf))
+            archive = SevenZip.openInArchive(null, RandomAccessFileInStream(raf))
 
             archive.extract(null, false, object : IArchiveExtractCallback {
                 override fun setTotal(total: Long) {}
@@ -533,7 +549,12 @@ object FileUtils {
         zis.close()
         } catch (e: ZipException) {
             try {
-                extractRar(path, unzipDirectory, unzippedFiles)
+                if (path.endsWith(".zip", ignoreCase = true)) {
+                    val newFileName = path.removeSuffix(".zip") + ".rar"
+                    renameFile(path, newFileName)
+                    Log.i(TAG, "Renamed zip file to rar and try to extract with rar format: ${path} -> ${newFileName}")
+                    extractRar(newFileName, unzipDirectory, unzippedFiles)
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error extracting RAR file", e)
                 throw e

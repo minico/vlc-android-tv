@@ -136,7 +136,8 @@ class SubtitleDownloaderDialogFragment : VLCBottomSheetDialogFragment() {
             UiTools.setKeyboardVisibility(binding.name, true)
             binding.name.requestFocus()
             state = SubDownloadDialogState.Search
-            binding.name.setText(viewModel.observableSearchName.get() ?: viewModel.title)
+            val splitedName= viewModel.title.removeSuffix(".mp4").removeSuffix(".mkv").removeSuffix(".ts").replace("."," ")
+            binding.name.setText(viewModel.observableSearchName.get() ?: splitedName)
         }
 
         binding.subDownloadHistory.setOnClickListener {
