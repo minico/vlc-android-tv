@@ -33,7 +33,8 @@ import android.os.ParcelFileDescriptor
 import android.os.storage.StorageManager
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
+import net.sf.sevenzipjbinding.*
+import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream
 import androidx.annotation.WorkerThread
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
@@ -55,6 +56,7 @@ import java.io.*
 import java.lang.Runnable
 import java.util.*
 import java.util.zip.ZipEntry
+import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 
@@ -441,6 +443,50 @@ object FileUtils {
         return volumeDescription
     }
 
+    fun extractRar(inputFile: String, outputDir: String, extractedFiles: ArrayList<String>) {
+        val archiveFile = File(inputFile)
+        val outDir = File(outputDir)
+        if (!outDir.exists()) outDir.mkdirs()
+
+        var archive: IInArchive? = null
+        var raf: RandomAccessFile? = null
+        var fos: java.io.OutputStream? = null
+
+        try {
+            raf = RandomAccessFile(archiveFile, "r")
+            archive = SevenZip.openInArchive(ArchiveFormat.RAR5, RandomAccessFileInStream(raf))
+
+            archive.extract(null, false, object : IArchiveExtractCallback {
+                override fun setTotal(total: Long) {}
+                override fun setCompleted(complete: Long) {}
+
+                override fun getStream(index: Int, extractAskMode: ExtractAskMode): ISequentialOutStream? {
+                    val isFolder = (archive.getProperty(index, PropID.IS_FOLDER) as? Boolean) ?: false
+                    if (isFolder) return null
+                    val fileName = archive.getProperty(index, PropID.PATH) as String
+                    val outFile = File(outDir, fileName)
+                    outFile.parentFile?.mkdirs()
+                    fos = outFile.outputStream()
+                    extractedFiles.add(outFile.absolutePath)
+                    return ISequentialOutStream { data ->
+                        fos?.write(data)
+                        data.size
+                    }
+                }
+
+                override fun prepareOperation(extractAskMode: ExtractAskMode) = Unit
+
+                override fun setOperationResult(result: ExtractOperationResult) {
+                    fos?.close()
+                    fos = null
+                }
+            })
+        } finally {
+            archive?.close()
+            raf?.close()
+        }
+    }
+
     suspend fun unpackZip(path: String, unzipDirectory: String): ArrayList<String> = withContext(Dispatchers.IO) {
         Log.i(TAG, "Unzipping $path to $unzipDirectory")
         val fis: InputStream
@@ -448,6 +494,8 @@ object FileUtils {
         val zis: ZipArchiveInputStream
         val unzippedFiles = ArrayList<String>()
         File(unzipDirectory).mkdirs()
+
+        try {
         fis = FileInputStream(path)
         //zis = ZipInputStream(BufferedInputStream(fis))
         zis = ZipArchiveInputStream(fis)
@@ -483,6 +531,17 @@ object FileUtils {
             ze = zis.nextEntry
         }
         zis.close()
+        } catch (e: ZipException) {
+            try {
+                extractRar(path, unzipDirectory, unzippedFiles)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error extracting RAR file", e)
+                throw e
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw e
+        }
         unzippedFiles
     }
 
