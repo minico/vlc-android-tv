@@ -77,22 +77,25 @@ class VideoTracksDialog : VLCBottomSheetDialogFragment() {
             }
 
             playbackService.videoTracks?.let { trackList ->
-                val trackAdapter = TrackAdapter(trackList as Array<MediaPlayer.TrackDescription>, trackList.firstOrNull { it.id == playbackService.videoTrack })
+                val newTrackList = trackList.filter { it.id != -1 }.toTypedArray()
+                val trackAdapter = TrackAdapter(newTrackList as Array<MediaPlayer.TrackDescription>, newTrackList.firstOrNull { it.id == playbackService.videoTrack })
                 trackAdapter.setOnTrackSelectedListener { track ->
                     trackSelectionListener.invoke(track.id, TrackType.VIDEO)
                 }
                 binding.videoTracks.trackList.adapter = trackAdapter
             }
             playbackService.audioTracks?.let { trackList ->
-                val trackAdapter = TrackAdapter(trackList as Array<MediaPlayer.TrackDescription>, trackList.firstOrNull { it.id == playbackService.audioTrack })
+                val newTrackList = trackList.filter { it.id != -1 }.toTypedArray()
+                val trackAdapter = TrackAdapter(newTrackList as Array<MediaPlayer.TrackDescription>, newTrackList.firstOrNull { it.id == playbackService.audioTrack})
                 trackAdapter.setOnTrackSelectedListener { track ->
                     trackSelectionListener.invoke(track.id, TrackType.AUDIO)
                 }
                 binding.audioTracks.trackList.adapter = trackAdapter
             }
             playbackService.spuTracks?.let { trackList ->
+                val newTrackList = trackList.filter { it.id != -1 }.toTypedArray()
                 if (!playbackService.hasRenderer()) {
-                    val trackAdapter = TrackAdapter(trackList as Array<MediaPlayer.TrackDescription>, trackList.firstOrNull { it.id == playbackService.spuTrack })
+                    val trackAdapter = TrackAdapter(newTrackList as Array<MediaPlayer.TrackDescription>, newTrackList.firstOrNull { it.id == playbackService.spuTrack})
                     trackAdapter.setOnTrackSelectedListener { track ->
                         trackSelectionListener.invoke(track.id, TrackType.SPU)
                     }
@@ -128,34 +131,36 @@ class VideoTracksDialog : VLCBottomSheetDialogFragment() {
         binding.tracksSeparator3.isEnabled = false
         binding.tracksSeparator2.isEnabled = false
 
-
-
-        generateSeparator(binding.audioTracks.options)
+        //generateSeparator(binding.audioTracks.options)
         generateOptionItem(binding.audioTracks.options, getString(R.string.audio_delay), R.drawable.ic_delay, VideoTrackOption.AUDIO_DELAY)
-        generateSeparator(binding.audioTracks.options, true)
+        //generateSeparator(binding.audioTracks.options, true)
         binding.audioTracks.options.setAnimationUpdateListener {
             binding.audioTracks.trackMore.rotation = if (binding.audioTracks.options.isCollapsed) 180F - (180F * it) else 180F * it
         }
 
 
-        generateSeparator(binding.subtitleTracks.options)
+        //generateSeparator(binding.subtitleTracks.options)
         generateOptionItem(binding.subtitleTracks.options, getString(R.string.spu_delay), R.drawable.ic_delay, VideoTrackOption.SUB_DELAY)
         generateOptionItem(binding.subtitleTracks.options, getString(R.string.subtitle_select), R.drawable.ic_subtitles_file, VideoTrackOption.SUB_PICK)
         generateOptionItem(binding.subtitleTracks.options, getString(R.string.download_subtitles), R.drawable.ic_download, VideoTrackOption.SUB_DOWNLOAD)
-        generateSeparator(binding.subtitleTracks.options, true)
+        //generateSeparator(binding.subtitleTracks.options, true)
         binding.subtitleTracks.options.setAnimationUpdateListener {
             binding.subtitleTracks.trackMore.rotation = if (binding.subtitleTracks.options.isCollapsed) 180F - (180F * it) else 180F * it
         }
 
-        binding.audioTracks.trackMore.setOnClickListener {
-            binding.audioTracks.options.toggle()
-            binding.subtitleTracks.options.collapse()
-        }
+        binding.audioTracks.options.toggle()
+        binding.subtitleTracks.options.toggle()
 
-        binding.subtitleTracks.trackMore.setOnClickListener {
-            binding.subtitleTracks.options.toggle()
-            binding.audioTracks.options.collapse()
-        }
+//        binding.audioTracks.trackMore.setOnClickListener {
+//            binding.audioTracks.options.toggle()
+//            binding.subtitleTracks.options.collapse()
+//        }
+//
+//        binding.subtitleTracks.trackMore.setOnClickListener {
+//            binding.subtitleTracks.options.toggle()
+//            binding.audioTracks.options.collapse()
+//        }
+
         super.onViewCreated(view, savedInstanceState)
         PlaybackService.serviceFlow.onEach { onServiceChanged(it) }.launchIn(lifecycleScope)
     }
