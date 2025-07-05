@@ -93,9 +93,8 @@ class VideoTracksDialog : VLCBottomSheetDialogFragment() {
                 binding.audioTracks.trackList.adapter = trackAdapter
             }
             playbackService.spuTracks?.let { trackList ->
-                val newTrackList = trackList.filter { it.id != -1 }.toTypedArray()
                 if (!playbackService.hasRenderer()) {
-                    val trackAdapter = TrackAdapter(newTrackList as Array<MediaPlayer.TrackDescription>, newTrackList.firstOrNull { it.id == playbackService.spuTrack})
+                    val trackAdapter = TrackAdapter(trackList as Array<MediaPlayer.TrackDescription>, trackList.firstOrNull { it.id == playbackService.spuTrack })
                     trackAdapter.setOnTrackSelectedListener { track ->
                         trackSelectionListener.invoke(track.id, TrackType.SPU)
                     }
