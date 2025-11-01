@@ -106,7 +106,7 @@ android {
             matchingFallbacks = ['release']
         }
         debug {
-            ndk.abiFilters "x86", "armeabi-v7a"
+            ndk.abiFilters "x86", "armeabi-v7a", "arm64-v8a"
             applicationIdSuffix ".debug"
             jniDebuggable true
         }
