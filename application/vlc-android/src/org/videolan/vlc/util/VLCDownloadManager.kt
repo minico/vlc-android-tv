@@ -99,6 +99,11 @@ object VLCDownloadManager: BroadcastReceiver(), LifecycleObserver {
             return downloadFailed(0, context)
         }
 
+        if(resp == null) {
+            Toast.makeText(context, "配额超限了", Toast.LENGTH_SHORT).show()
+            return downloadFailed(0, context)
+        }
+
         if (resp.sub.subs?.isEmpty() == true) return downloadFailed(0, context)
         Log.i(
             "VLCDownloadManager",

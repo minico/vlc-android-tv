@@ -137,7 +137,7 @@ class SubtitlesModel(private val context: Context, private val mediaUri: Uri, pr
         return noSufix.replace('.', ' ')
     }
 
-    private suspend fun getSubtitleByName(name: String): AssrtResponse {
+    private suspend fun getSubtitleByName(name: String): AssrtResponse? {
         Log.i(this::class.java.simpleName, "Getting subs by name with $name")
         val splitedName = processOriginalName(name)
         val builder = StringBuilder(context.getString(R.string.sub_result_by_name, "<i>$splitedName</i>"))
@@ -180,6 +180,7 @@ class SubtitlesModel(private val context: Context, private val mediaUri: Uri, pr
                         101 -> observableMessage.set("搜索关键字长度必须大于3")
                     }
                 } else {
+                    Toast.makeText(context, "配额超限了?", Toast.LENGTH_SHORT).show()
                     observableMessage.set(context.getString(R.string.no_result))
                     Log.e("SubtitlesModel", "No subtitles found for $name")
                 }

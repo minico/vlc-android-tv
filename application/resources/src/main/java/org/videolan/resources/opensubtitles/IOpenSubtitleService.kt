@@ -6,7 +6,7 @@ import retrofit2.http.Query
 //Passing 0 for numbers and "" for strings ignores that parameters
 interface IOpenSubtitleService {
     @GET("search")
-    suspend fun queryByName(@Query("token") token: String = "VJmwTuuEU5QR2dGQYxftQVElKnNygTj6",
+    suspend fun queryByName(@Query("token") token: String = "yL56ac5MqNz15XwcafDmnQFho93mQ0ws",
                             @Query("q") q: String,
                             @Query("filelist") filelist: Int = 1,
                             @Query("cnt") cnt: Int = 15,
@@ -15,7 +15,7 @@ interface IOpenSubtitleService {
 
 
     @GET("detail")
-    suspend fun queryById(@Query("token") token: String = "VJmwTuuEU5QR2dGQYxftQVElKnNygTj6",
+    suspend fun queryById(@Query("token") token: String = "yL56ac5MqNz15XwcafDmnQFho93mQ0ws",
                           @Query("id") id: Int): AssrtResponse
 }
 
