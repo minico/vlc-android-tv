@@ -362,11 +362,11 @@ abstract class BrowserProvider(val context: Context, val dataset: LiveDataset<Me
                         Settings.getInstance(context).getString(LOGIN_USER_NAME, "admin").toString()
                     val passwd: String =
                         Settings.getInstance(context).getString(LOGIN_PASSWORD, "123456").toString()
-                    try {
-                        mw.lastModified = smbClient.getFileLastModifiedDate(path, user, passwd)
-                    } catch (e: Exception) {
-
-                    }
+//                    try {
+//                        mw.lastModified = smbClient.getFileLastModifiedDate(path, user, passwd)
+//                    } catch (e: Exception) {
+//
+//                    }
                 }
             }
             return withContext(coroutineContextProvider.IO) {
