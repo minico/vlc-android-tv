@@ -24,13 +24,16 @@ package org.videolan.vlc.gui.preferences
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import org.videolan.libvlc.util.AndroidUtil
+import org.videolan.resources.AndroidDevices
 import org.videolan.resources.VLCInstance
 import org.videolan.tools.*
 import org.videolan.vlc.R
+import org.videolan.vlc.util.Permissions
 
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -44,6 +47,7 @@ class PreferencesVideo : BasePreferenceFragment(), SharedPreferences.OnSharedPre
         super.onCreate(savedInstanceState)
         findPreference<Preference>(POPUP_KEEPSCREEN)?.isVisible = !AndroidUtil.isOOrLater
         findPreference<Preference>(POPUP_FORCE_LEGACY)?.isVisible = AndroidUtil.isOOrLater
+        findPreference<Preference>(KEY_VIDEO_APP_SWITCH)?.isVisible = AndroidDevices.hasPiP
     }
 
     override fun onStart() {
@@ -58,14 +62,18 @@ class PreferencesVideo : BasePreferenceFragment(), SharedPreferences.OnSharedPre
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        val activity = activity ?: return
         when (key) {
             VIDEO_HUD_TIMEOUT -> {
                 Settings.videoHudDelay = sharedPreferences.getString(VIDEO_HUD_TIMEOUT, "2")?.toInt() ?: 2
             }
-            "preferred_resolution" -> {
+            "preferred_resolution", "hardware_acceleration" -> {
                 VLCInstance.restart()
                 (activity as? PreferencesActivity)?.restartMediaPlayer()
             }
+            KEY_VIDEO_APP_SWITCH -> if (!AndroidUtil.isOOrLater && findPreference<ListPreference>(key)?.value == "2"
+                    && !Permissions.canDrawOverlays(activity))
+                Permissions.checkDrawOverlaysPermission(activity)
         }
     }
 }

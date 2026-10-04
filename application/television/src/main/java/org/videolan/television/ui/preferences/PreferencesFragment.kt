@@ -24,22 +24,15 @@
 package org.videolan.television.ui.preferences
 
 import android.annotation.TargetApi
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
-import androidx.fragment.app.FragmentActivity
 import androidx.preference.Preference
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
-import org.videolan.medialibrary.interfaces.Medialibrary
 import org.videolan.resources.AndroidDevices
 import org.videolan.tools.KEY_VIDEO_APP_SWITCH
-import org.videolan.tools.RESULT_RESTART
 import org.videolan.tools.SCREEN_ORIENTATION
 import org.videolan.vlc.R
-import org.videolan.vlc.gui.SecondaryActivity
-import org.videolan.vlc.util.*
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
@@ -54,27 +47,6 @@ class PreferencesFragment : BasePreferenceFragment() {
         super.onCreate(savedInstanceState)
         findPreference<Preference>(SCREEN_ORIENTATION)?.isVisible = false
         findPreference<Preference>("extensions_category")?.isVisible = false
-        findPreference<Preference>("casting_category")?.isVisible = false
         findPreference<Preference>(KEY_VIDEO_APP_SWITCH)?.isVisible = AndroidDevices.hasPiP
-    }
-
-    override fun onPreferenceTreeClick(preference: Preference): Boolean {
-        val context = activity ?: return false
-        return when (preference.key) {
-            "directories" -> {
-                when {
-                    Medialibrary.getInstance().isWorking -> Toast.makeText(context, getString(R.string.settings_ml_block_scan), Toast.LENGTH_SHORT).show()
-                    Permissions.canReadStorage(context) -> {
-                        val intent = Intent(context.applicationContext, SecondaryActivity::class.java)
-                        intent.putExtra("fragment", SecondaryActivity.STORAGE_BROWSER)
-                        startActivity(intent)
-                        activity.setResult(RESULT_RESTART)
-                    }
-                    else -> Permissions.showStoragePermissionDialog(context as FragmentActivity, false)
-                }
-                true
-            }
-            else -> super.onPreferenceTreeClick(preference)
-        }
     }
 }

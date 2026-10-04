@@ -23,25 +23,27 @@
 
 package org.videolan.vlc.gui.preferences
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
+import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.ListPreference
 import androidx.preference.Preference
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
-import org.videolan.libvlc.util.AndroidUtil
+import kotlinx.coroutines.launch
 import org.videolan.medialibrary.interfaces.Medialibrary
-import org.videolan.tools.PLAYBACK_HISTORY
-import org.videolan.tools.RESULT_RESTART
+import org.videolan.resources.KEY_AUDIO_LAST_PLAYLIST
+import org.videolan.resources.KEY_MEDIA_LAST_PLAYLIST
+import org.videolan.resources.VLCInstance
+import org.videolan.tools.LocaleUtils
+import org.videolan.tools.Settings
+import org.videolan.tools.VIDEO_HUD_TIMEOUT
 import org.videolan.vlc.BuildConfig
 import org.videolan.vlc.R
-import org.videolan.vlc.gui.SecondaryActivity
 import org.videolan.vlc.gui.helpers.UiTools
-import org.videolan.vlc.gui.preferences.search.PreferenceItem
-import org.videolan.vlc.util.Permissions
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
@@ -54,6 +56,7 @@ class PreferencesFragment : BasePreferenceFragment(), SharedPreferences.OnShared
     override fun onStart() {
         super.onStart()
         preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        prepareLocaleList()
     }
 
     override fun onStop() {
@@ -64,76 +67,51 @@ class PreferencesFragment : BasePreferenceFragment(), SharedPreferences.OnShared
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        findPreference<Preference>("extensions_category")?.isVisible = BuildConfig.DEBUG
-        arguments?.getParcelable<PreferenceItem>(EXTRA_PREF_END_POINT)?.let { endPoint ->
-            when (endPoint.parentScreen) {
-                R.xml.preferences_ui -> loadFragment(PreferencesUi().apply {
-                    arguments = bundleOf(EXTRA_PREF_END_POINT to endPoint)
-                })
-                R.xml.preferences_video -> loadFragment(PreferencesVideo().apply {
-                    arguments = bundleOf(EXTRA_PREF_END_POINT to endPoint)
-                })
-                R.xml.preferences_subtitles -> loadFragment(PreferencesSubtitles().apply {
-                    arguments = bundleOf(EXTRA_PREF_END_POINT to endPoint)
-                })
-                R.xml.preferences_audio -> loadFragment(PreferencesAudio().apply {
-                    arguments = bundleOf(EXTRA_PREF_END_POINT to endPoint)
-                })
-                R.xml.preferences_extensions -> loadFragment(PreferencesExtensions().apply {
-                    arguments = bundleOf(EXTRA_PREF_END_POINT to endPoint)
-                })
-                R.xml.preferences_adv -> loadFragment(PreferencesAdvanced().apply {
-                    arguments = bundleOf(EXTRA_PREF_END_POINT to endPoint)
-                })
-                R.xml.preferences_casting -> loadFragment(PreferencesCasting().apply {
-                    arguments = bundleOf(EXTRA_PREF_END_POINT to endPoint)
-                })
-            }
-            arguments = null
-        }
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
         when (preference.key) {
-            "directories" -> {
-                when {
-                    Medialibrary.getInstance().isWorking -> UiTools.snacker(requireActivity(), getString(R.string.settings_ml_block_scan))
-                    Permissions.canReadStorage(requireContext()) -> {
-                        val activity = requireActivity()
-                        val intent = Intent(activity.applicationContext, SecondaryActivity::class.java)
-                        intent.putExtra("fragment", SecondaryActivity.STORAGE_BROWSER)
-                        startActivity(intent)
-                        activity.setResult(RESULT_RESTART)
-                    }
-                    else -> Permissions.showStoragePermissionDialog(requireActivity(), false)
-                }
-                return true
-            }
-            "ui_category" -> loadFragment(PreferencesUi())
-            "video_category" -> loadFragment(PreferencesVideo())
-            "subtitles_category" -> loadFragment(PreferencesSubtitles())
-            "audio_category" -> loadFragment(PreferencesAudio())
-            "extensions_category" -> loadFragment(PreferencesExtensions())
-            "adv_category" -> loadFragment(PreferencesAdvanced())
-            "casting_category" -> loadFragment(PreferencesCasting())
-            PLAYBACK_HISTORY -> {
-                val activity = activity
-                activity?.setResult(RESULT_RESTART)
+            "clear_history" -> {
+                AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.clear_playback_history)
+                        .setMessage(R.string.validation)
+                        .setIcon(R.drawable.ic_warning)
+                        .setPositiveButton(R.string.yes) { _, _ ->
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                Medialibrary.getInstance().clearHistory()
+                                Settings.getInstance(requireActivity()).edit().remove(KEY_AUDIO_LAST_PLAYLIST).remove(KEY_MEDIA_LAST_PLAYLIST).apply()
+                            }
+                        }
+                        .setNegativeButton(R.string.cancel, null).show()
                 return true
             }
             else -> return super.onPreferenceTreeClick(preference)
         }
-        return true
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        val activity = activity ?: return
         when (key) {
-            "video_action_switch" -> if (!AndroidUtil.isOOrLater && findPreference<ListPreference>(key)?.value == "2"
-                    && !Permissions.canDrawOverlays(activity))
-                Permissions.checkDrawOverlaysPermission(activity)
+            "set_locale" -> {
+                (activity as PreferencesActivity).setRestart()
+                UiTools.restartDialog(requireActivity())
+            }
+            "hardware_acceleration", "subtitle_text_encoding" -> {
+                VLCInstance.restart()
+                (activity as? PreferencesActivity)?.restartMediaPlayer()
+            }
+            VIDEO_HUD_TIMEOUT -> {
+                Settings.videoHudDelay = sharedPreferences.getString(VIDEO_HUD_TIMEOUT, "2")?.toInt() ?: 2
+            }
         }
+    }
+
+    private fun prepareLocaleList() {
+        val localePair = LocaleUtils.getLocalesUsedInProject(requireActivity(), BuildConfig.TRANSLATION_ARRAY, getString(R.string.device_default))
+        val lp = findPreference<ListPreference>("set_locale")
+        lp?.entries = localePair.localeEntries
+        lp?.entryValues = localePair.localeEntryValues
     }
 }

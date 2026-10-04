@@ -253,9 +253,9 @@
     <string name="remove_custom_path">移除自定义路径</string>
     <string name="hardware_acceleration">硬件加速</string>
     <string name="hardware_acceleration_summary">禁用: 稳定性更高\n解码: 可能提升性能\n完全: 可能进一步提升性能</string>
-    <string name="hardware_acceleration_disabled">禁用</string>
-    <string name="hardware_acceleration_decoding">解码加速</string>
-    <string name="hardware_acceleration_full">完全加速</string>
+    <string name="hardware_acceleration_disabled">禁用 - 稳定性更高</string>
+    <string name="hardware_acceleration_decoding">解码 - 可能提升性能</string>
+    <string name="hardware_acceleration_full">完全 - 可能进一步提升性能</string>
     <string name="dev_hardware_decoder">高级硬件解码器</string>
     <string name="dev_hardware_decoder_summary">强制使用硬件解码器，仅限高级用户使用</string>
     <string name="automatic">自动</string>
@@ -380,7 +380,7 @@
     <string name="enable_time_stretching_audio">启用音频的时间伸缩</string>
     <string name="enable_time_stretching_audio_summary">加速或减慢音频，但保持音调不变 (对设备性能略有要求)</string>
 
-    <string name="advanced_prefs_category">高级</string>
+    <string name="advanced_prefs_category">其它</string>
     <string name="auto_rescan">自动重新扫描</string>
     <string name="auto_rescan_summary">应用启动时，自动扫描设备中新增或删除的媒体文件</string>
     <string name="dump_media_db">转储媒体数据库</string>

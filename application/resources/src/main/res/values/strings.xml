@@ -275,9 +275,9 @@
     <string name="remove_custom_path">Remove custom path</string>
     <string name="hardware_acceleration">Hardware Acceleration</string>
     <string name="hardware_acceleration_summary">Disabled: better stability\nDecoding: may improve performance\nFull: may improve performance further</string>
-    <string name="hardware_acceleration_disabled">Disabled</string>
-    <string name="hardware_acceleration_decoding">Decoding acceleration</string>
-    <string name="hardware_acceleration_full">Full acceleration</string>
+    <string name="hardware_acceleration_disabled">Disabled - Better stability</string>
+    <string name="hardware_acceleration_decoding">Decoding - May improve performance</string>
+    <string name="hardware_acceleration_full">Full - May improve performance further</string>
     <string name="dev_hardware_decoder">Advanced hardware decoder</string>
     <string name="dev_hardware_decoder_summary">Force hardware decoder, for advanced users only</string>
     <string name="dev_hardware_decoder_omx" translatable="false">iomx</string>
@@ -408,7 +408,7 @@
     <string name="enable_time_stretching_audio">Time-stretching audio</string>
     <string name="enable_time_stretching_audio_summary">Speed up and slow down audio without changing the pitch (requires a fast device)</string>
 
-    <string name="advanced_prefs_category">Advanced</string>
+    <string name="advanced_prefs_category">Other</string>
     <string name="auto_rescan">Auto rescan</string>
     <string name="auto_rescan_summary">Automatically scan device for new or deleted media at application startup</string>
     <string name="dump_media_db">Dump media database</string>

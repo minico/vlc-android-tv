@@ -4,6 +4,13 @@
                                       xmlns:app="http://schemas.android.com/apk/res-auto"
                                       android:title="@string/advanced_prefs_category">
 
+    <CheckBoxPreference
+            app:singleLineTitle="false"
+            android:defaultValue="true"
+            android:key="playback_history"
+            android:summary="@string/playback_history_summary"
+            android:title="@string/playback_history_title"/>
+
     <Preference
             android:title="@string/optional_features"
             android:summary="@string/optional_features_summary"

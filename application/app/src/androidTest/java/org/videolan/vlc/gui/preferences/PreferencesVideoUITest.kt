@@ -30,6 +30,16 @@ class PreferencesVideoUITest: BasePreferenceUITest() {
     }
 
     @Test
+    fun checkHardwareAccelerationSetting() {
+        val key = "hardware_acceleration"
+
+        checkModeChanged(key, "-1", "-1", MAP_HARDWARE_ACCEL)
+        checkModeChanged(key, "0", "-1", MAP_HARDWARE_ACCEL)
+        checkModeChanged(key, "1", "-1", MAP_HARDWARE_ACCEL)
+        checkModeChanged(key, "2", "-1", MAP_HARDWARE_ACCEL)
+    }
+
+    @Test
     fun checkPersistentBrightnessSetting() {
         val key = SAVE_BRIGHTNESS
         checkToggleWorks(key, settings, default = false)
@@ -109,5 +119,9 @@ class PreferencesVideoUITest: BasePreferenceUITest() {
 
         val key = "enable_clone_mode"
         checkToggleWorks(key, settings, default = false)
+    }
+
+    companion object {
+        val MAP_HARDWARE_ACCEL = mapOf("-1" to R.string.automatic, "0" to R.string.hardware_acceleration_disabled, "1" to R.string.hardware_acceleration_decoding, "2" to R.string.hardware_acceleration_full)
     }
 }
